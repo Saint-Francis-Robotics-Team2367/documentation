@@ -1,0 +1,5 @@
+# GitHub Pages config (optional). With Pages enabled on main / (root), README.md
+# becomes the home page and links between .md files are rewritten automatically.
+title: Team 2367 Programming Docs
+description: Onboarding docs for new programmers on FRC Team 2367
+theme: jekyll-theme-cayman
