@@ -1,15 +1,17 @@
+---
+title: Glossary
+nav_order: 2
+---
+
 # Glossary
 
 Words you'll hear in the shop, on Chief Delphi, and in our code. Terms are grouped by topic. Many entries
 have an **In our code** note that points at where the idea shows up in
 [`2026dev`](https://github.com/Saint-Francis-Robotics-Team2367/2026dev), our 2027-season robot code.
 
-> **Heads-up about 2027:** the control system is new for the 2027 season, and a lot of names
-> changed. Tutorials from 2026 or earlier will use old names (`roboRIO`, `ChassisSpeeds`,
-> `robotInit`, `SmartDashboard`, camelCase methods). Entries marked **2027** explain what changed.
-> When a tutorial and our code disagree, trust our code and the installed RobotPy stubs.
+Entries marked **2027:** changed this season, so older tutorials use different names.
 
-**Jump to:** [FRC basics](#frc-basics) · [Software stack](#software-stack) ·
+**Jump to:** [FRC basics](#frc-basics) · [Python basics](#python-basics) · [Software stack](#software-stack) ·
 [Hardware & electronics](#hardware--electronics) · [Drivetrains](#drivetrains) ·
 [Command-based programming](#command-based-programming) ·
 [Geometry, kinematics & odometry](#geometry-kinematics--odometry) · [Controls](#controls) ·
@@ -22,6 +24,8 @@ have an **In our code** note that points at where the idea shows up in
 
 **FIRST / FRC** — *FIRST* is the nonprofit that runs the program. *FRC* (FIRST Robotics Competition) is the high-school
 league we compete in: big robots, alliances of three teams, a new game every year.
+
+**FTC / FLL** — FIRST's other programs: FTC (FIRST Tech Challenge) uses smaller robots, and FLL (FIRST LEGO League) is for younger students. FTC tutorials talk about `OpMode` and `hardwareMap`, which don't exist in FRC.
 
 **Kickoff / build season / competition season** — The game is revealed at **kickoff** in early January. **Build season** follows, when we design, build,
 and program the robot. **Competition season** is when we play at events.
@@ -52,6 +56,29 @@ and read gamepads. **2027:** a new multi-platform Driver Station replaces the ol
 controller cuts motor output to protect itself. A robot that "dies" mid-push is often browning out.
 
 **Bumpers** — The padded fabric frame around the robot. Bumper color (red or blue) shows which alliance you're on.
+
+---
+
+## Python basics
+
+Just enough Python vocabulary to read our code. The [Python tutorial](https://docs.python.org/3/tutorial/) explains each one properly.
+
+**Variable / type** — A named value, like `max_speed = 4.5`. Its *type* is what kind of value it is: `int`, `float`, `str`, `bool`, `list`, `dict`.
+
+**Function / method** — A reusable block of code you call by name. A *method* is a function that belongs to a class, like `drivetrain.drive(...)`.
+
+**Class / object** — A *class* is a blueprint, like `Drivetrain`. An *object* (or *instance*) is one thing built from it, like `self.drivetrain = Drivetrain()`. Subsystems and commands are all classes.
+
+**`self`** — Inside a method, `self` is the object the method was called on. `self._drivetrain` means "this command's drivetrain".
+
+**Constructor (`__init__`)** — The method that runs when an object is created. It sets up the object's starting state.<br>
+**2027:** robot setup goes in the robot's constructor now, since `robotInit` was removed.
+
+**Inheritance / `super().__init__()`** — `class DriveByController(Command)` means our class *inherits* from WPILib's `Command` and gets all its behavior. `super().__init__()` runs the parent class's constructor first. Forgetting it causes confusing errors.
+
+**Override** — Defining a method with the same name as one in the parent class, so yours runs instead. That's how `execute()` and `periodic()` work. The name must match *exactly*.
+
+**Module / import** — A *module* is a `.py` file. `from constants import DriveConstants` pulls a name from another file. Don't name your own files after RobotPy packages (like `telemetry.py`), or the import gets confused.
 
 ---
 
@@ -141,6 +168,8 @@ forward. You measure it once per module.
 
 **Gyro / IMU** — A sensor that measures the robot's rotation (heading). Field-relative driving depends on it.<br>
 **2027:** SystemCore has a built-in IMU. Before that, teams used a separate Pigeon 2 or NavX.
+
+**Mechanism** — A physical part of the robot that does one job: an intake, arm, elevator, or shooter. Usually each mechanism becomes one subsystem in code.
 
 **Gear ratio / reduction** — How many motor rotations it takes to turn the output once. Our drive reduction of 6.75 means the
 motor spins 6.75 times for each wheel rotation.<br>
@@ -234,6 +263,12 @@ same time), `race`, `deadline`, plus helpers like `.and_then()` and `.with_timeo
 bindings. It keeps `robot.py` small.<br>
 **In our code:** `robotcontainer.py`.
 
+**Iterative vs command-based** — Two ways to structure robot code. *Iterative* code puts all logic directly in `teleop_periodic()` and similar methods. That's fine for tiny robots but gets messy fast. *Command-based* splits it into subsystems and commands. We use command-based.
+
+**State machine** — Logic that's always in exactly one named state ("idle", "intaking", "holding", "shooting") and moves between states on conditions. It's useful for mechanisms with several steps.
+
+**Debounce** — Requiring a condition (a sensor or button) to stay true for a short time before acting on it, so a quick flicker doesn't trigger anything.
+
 **Command factory / inline command** — A short function that returns a command built from helpers like `cmd.run_once(...)`, instead of a
 whole new class.
 
@@ -297,7 +332,8 @@ starting points and still need tuning on the real robot.
 **In our code:** both swerve motors do this.
 
 **Motion profile / Motion Magic** — Planning a smooth path to a setpoint (accelerate, cruise, decelerate) instead of jumping straight
-to it. Motion Magic is CTRE's built-in version.
+to it. In WPILib, `TrapezoidProfile` generates the profile and `ProfiledPIDController` follows it.
+Motion Magic is CTRE's version that runs on the motor controller.
 
 **SysId** — A WPILib tool that runs test motions on a mechanism and calculates feedforward and PID gains from
 the data.
@@ -359,6 +395,18 @@ where the robot is.
 results over NetworkTables.
 
 **Coprocessor** — An extra computer on the robot, such as an Orange Pi, that handles heavy work like vision.
+
+**`SwerveDrivePoseEstimator`** — WPILib's class that combines swerve odometry with vision measurements into one pose estimate. It replaces plain odometry once we add cameras.
+
+**Kalman filter** — The math behind pose estimators. It blends several noisy measurements, weighting each one by how much it's trusted.
+
+**Standard deviations (std devs)** — In a pose estimator, how much you *distrust* a measurement. Larger values mean the estimator trusts it less. Vision measurements from far away usually get larger std devs.
+
+**Latency compensation** — Camera results arrive a little late. The pose estimator uses the measurement's timestamp to apply it where the robot *was* when the picture was taken.
+
+**MegaTag2** — Limelight's AprilTag localization mode. It uses the robot's gyro heading to give more stable pose estimates.
+
+**Vision dropout** — When the camera loses sight of tags and stops giving measurements. Odometry has to carry the estimate until tags are visible again.
 
 ---
 

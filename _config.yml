@@ -1,5 +1,34 @@
-# GitHub Pages config (optional). With Pages enabled on main / (root), README.md
-# becomes the home page and links between .md files are rewritten automatically.
-title: Team 2367 Programming Docs
-description: Onboarding docs for new programmers on FRC Team 2367
-theme: jekyll-theme-cayman
+# GitHub Pages site (Settings -> Pages -> Deploy from branch: main, / (root)).
+title: Team 2367 Docs
+description: Saint Francis Robotics (FRC Team 2367) team handbook
+remote_theme: just-the-docs/just-the-docs@v0.10.1
+plugins:
+  - jekyll-remote-theme
+  - jekyll-relative-links
+
+relative_links:
+  enabled: true
+
+# Colors and fonts follow the Saint Francis brand guide (https://www.sfhs.com/our-brand).
+# See _sass/color_schemes/sfhs.scss, _sass/custom/, and _includes/head_custom.html.
+color_scheme: sfhs
+
+# Logo: clubs use the school's spirit logo. Ask marcom@sfhs.com before adding it,
+# then drop it in assets/images/ and uncomment this line.
+# logo: "/assets/images/logo.png"
+
+search_enabled: true
+heading_anchors: true
+
+aux_links:
+  "Robot code":
+    - "https://github.com/Saint-Francis-Robotics-Team2367/2026dev"
+aux_links_new_tab: true
+
+gh_edit_link: true
+gh_edit_link_text: "Edit this page on GitHub"
+gh_edit_repository: "https://github.com/Saint-Francis-Robotics-Team2367/documentation"
+gh_edit_branch: "main"
+gh_edit_view_mode: "edit"
+
+footer_content: "Saint Francis Robotics · FRC Team 2367"
